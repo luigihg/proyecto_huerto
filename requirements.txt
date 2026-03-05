@@ -6,3 +6,4 @@ wordcloud
 geopandas
 shapely
 fpdf
+google-generativeai

@@ -1,0 +1,20 @@
+# 1. SECRETOS Y CREDENCIALES (¡Lo más importante!)
+.streamlit/
+secrets.toml
+.env
+
+# 2. Archivos basura de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# 3. Entornos virtuales (Si usas venv o Anaconda)
+venv/
+env/
+.venv/
+
+# 4. Archivos del sistema operativo (Ocultos)
+.DS_Store
+Thumbs.db

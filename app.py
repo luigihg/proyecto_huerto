@@ -8,6 +8,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 from fpdf import FPDF
 import io
+import google.generativeai as genai
 
 # Configuración de la página
 st.set_page_config(page_title="Huerto Inteligente - Proyecto Final", layout="wide")
@@ -130,3 +131,40 @@ st.sidebar.download_button(
     file_name="Reporte_Huerto_Inteligente.pdf",
     mime="application/pdf"
 )
+
+
+# 1. Configurar tu conexión a Gemini genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+# OJO: En un proyecto real, la API Key no se pone directo en el código por seguridad, 
+# se usa un archivo de secretos, pero para probar está bien.
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+modelo = genai.GenerativeModel('gemini-2.5-flash')
+
+# 2. Diseño de la página
+st.title("🤖 Chatbot del Huerto")
+st.markdown("¡Pregúntame cualquier cosa sobre manzanas o datos!")
+
+# 3. Crear la "memoria" del chat si no existe
+if "historial" not in st.session_state:
+    st.session_state.historial = []
+
+# 4. Dibujar los mensajes guardados en la pantalla
+for mensaje in st.session_state.historial:
+    with st.chat_message(mensaje["rol"]):
+        st.markdown(mensaje["texto"])
+
+# 5. La caja de texto donde escribe el usuario
+prompt = st.chat_input("Escribe tu pregunta aquí...")
+
+if prompt:
+    # Mostrar lo que escribió el usuario y guardarlo en memoria
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    st.session_state.historial.append({"rol": "user", "texto": prompt})
+
+    # Llamar a la API de Gemini para que piense la respuesta
+    respuesta = modelo.generate_content(prompt)
+
+    # Mostrar la respuesta del bot y guardarla en memoria
+    with st.chat_message("assistant"):
+        st.markdown(respuesta.text)
+    st.session_state.historial.append({"rol": "assistant", "texto": respuesta.text})
